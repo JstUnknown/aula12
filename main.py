@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 from pynput.keyboard import Key,Controller
+import time
 
 keyboard=Controller()
 
@@ -21,13 +22,13 @@ tips = [4, 8, 12, 16, 20]
 state=None
 
 # FUNÇÃO PRA CONTAR DEDOS
-def count_fingers(hand_landmarks, handNo=0):
+def count_fingers(image, hand_landmarks, handNo=0):
     fingers = []
     
     global state
     if hand_landmarks:
         landmarks=hand_landmarks[handNo].landmark
-        for lm_index in tipIds:
+        for lm_index in tips:
             fingers_tip_y=landmarks[lm_index].y
             fingers_bottom_y=landmarks[lm_index-2].y
             if lm_index!=4:
@@ -42,12 +43,17 @@ def count_fingers(hand_landmarks, handNo=0):
         if totalFingers==0 and state=="Play":
             state="Pause"
             keyboard.press("K")
+            keyboard.release("K")
         fingers_tip_x=(landmarks[8].x)*width
         if totalFingers==1:
             if fingers_tip_x<width-400:
                 keyboard.press(Key.left)
+                keyboard.release(Key.left)
+                time.sleep(0.2)
             if fingers_tip_x>width-50:
                 keyboard.press(Key.right)
+                keyboard.release(Key.right)
+                time.sleep(0.2)
 
 def drawHandLanMarks(image, hand_landmarks):
     if hand_landmarks:
